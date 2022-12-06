@@ -36,7 +36,7 @@ var badgePriority = (await File.ReadAllLinesAsync("Input.txt"))
     })
     .Priority;
 
-Console.WriteLine($"Part 1 Total: {badgePriority}");
+Console.WriteLine($"Part 2 Total: {badgePriority}");
 
 class Accumulator
 {
