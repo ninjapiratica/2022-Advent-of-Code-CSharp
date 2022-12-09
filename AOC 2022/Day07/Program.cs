@@ -67,6 +67,36 @@ var totalOfSmallDirectories = DoWork(currentFolder);
 
 Console.WriteLine($"Part 1 Total: {totalOfSmallDirectories}");
 
+var freeSpace = 70000000 - currentFolder.Size;
+var moreSpaceNeeded = 30000000 - freeSpace;
+
+Folder? DoWork2(Folder folder)
+{
+    Folder? fff = null;
+    foreach (var f in folder.Folders)
+    {
+        var newFFF = DoWork2(f.Value);
+        if (newFFF != null)
+        {
+            if (fff == null || newFFF.Size < fff.Size)
+            {
+                fff = newFFF;
+            }
+        }
+    }
+
+    if (folder.Size >= moreSpaceNeeded && fff == null)
+    {
+        return folder;
+    }
+
+    return fff;
+}
+
+var folderToDelete = DoWork2(currentFolder);
+
+Console.WriteLine($"Part 2 Size: {folderToDelete?.Size}");
+
 public class Folder
 {
     public Folder? ParentFolder { get; set; }
