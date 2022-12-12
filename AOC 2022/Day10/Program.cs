@@ -1,4 +1,33 @@
 ﻿
-var lines = await File.ReadAllLinesAsync("Input.txt");
+var importantCycles = new int[] { 20, 60, 100, 140, 180, 220 };
 
-Console.WriteLine($"Part 1 Output");
+var aggFinal = (await File.ReadAllLinesAsync("Input.txt"))
+    .Aggregate(new Agg { Total = 1, CycleNumber = 1 }, (agg, line) =>
+    {
+        var cycles = new List<int> { agg.CycleNumber };
+        var change = 0;
+        if (line != "noop")
+        {
+            cycles.Add(agg.CycleNumber + 1);
+            change = int.Parse(line.Split(' ')[1]);
+        }
+
+        Console.WriteLine($"{line}\t{agg.ImportantTotal}\t{agg.Total}\t{string.Join(", ", cycles)}");
+
+        agg.ImportantTotal += importantCycles.Intersect(cycles).DefaultIfEmpty().Sum(c => c * agg.Total);
+        agg.CycleNumber = cycles.Max() + 1;
+        agg.Total += change;
+
+        return agg;
+    });
+
+Console.WriteLine($"Part 1 Output: {aggFinal.ImportantTotal}");
+
+class Agg
+{
+    public int ImportantTotal { get; set; }
+
+    public int Total { get; set; }
+
+    public int CycleNumber { get; set; }
+}
