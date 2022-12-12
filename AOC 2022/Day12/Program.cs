@@ -59,7 +59,7 @@ for (int i = 0; i < grid.GetLength(1); i++)
 
 // steps is total path length - starting location
 Console.WriteLine($"Part 1 Result: {steppers.First(s => s.Current == end)?.Path.Count() - 1}");
-// 534 -- too high
+// 534
 
 
 
