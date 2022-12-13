@@ -29,9 +29,9 @@ for (int i = 0; i < maxY; i++)
     }
 }
 
-var sToE = RunSimulation(start);
+//var sToE = RunSimulation(start);
 
-Console.WriteLine(sToE);
+//Console.WriteLine(sToE);
 
 var shortestPath = int.MaxValue;
 for (int i = 0; i < maxY; i++)
@@ -40,9 +40,14 @@ for (int i = 0; i < maxY; i++)
     {
         if (grid[j, i].Height == 'a')
         {
-            Restart();
-            shortestPath = Math.Min(shortestPath, RunSimulation(new Point(j, i)));
-
+            if ((j > 0 && grid[j - 1, i].Height == 'b') ||
+                (j < maxX - 1 && grid[j + 1, i].Height == 'b') ||
+                (i > 0 && grid[j, i - 1].Height == 'b') ||
+                (i < maxY - 1 && grid[j, i + 1].Height == 'b'))
+            {
+                Restart();
+                shortestPath = Math.Min(shortestPath, RunSimulation(new Point(j, i)));
+            }
         }
     }
 }
