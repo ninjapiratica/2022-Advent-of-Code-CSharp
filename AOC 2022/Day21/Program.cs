@@ -22,13 +22,21 @@ var monkeys = (await File.ReadAllLinesAsync("Input.txt"))
         if (monkey.Id == "root")
         {
             rootMonkey = monkey;
+            monkey.Operation = "=";
+        }
+
+        if (monkey.Id == "humn")
+        {
+            monkey.Value = null;
         }
 
         return monkey;
     })
     .ToDictionary(m => m.Id);
 
-Console.WriteLine(rootMonkey.Calculate(monkeys));
+rootMonkey.Calculate(monkeys);
+
+Console.WriteLine(rootMonkey.Solve(monkeys, null));
 
 public class Monkey
 {
@@ -42,11 +50,11 @@ public class Monkey
 
     public string? RightMonkey { get; set; }
 
-    public decimal Calculate(Dictionary<string, Monkey> monkeys)
+    public decimal? Calculate(Dictionary<string, Monkey> monkeys)
     {
-        if (Value.HasValue)
+        if (string.IsNullOrWhiteSpace(LeftMonkey))
         {
-            return Value.Value;
+            return Value;
         }
 
         var l = monkeys[LeftMonkey!];
@@ -58,9 +66,84 @@ public class Monkey
             "-" => l.Calculate(monkeys) - r.Calculate(monkeys),
             "*" => l.Calculate(monkeys) * r.Calculate(monkeys),
             "/" => l.Calculate(monkeys) / r.Calculate(monkeys),
+            "=" => (l.Calculate(monkeys) + r.Calculate(monkeys)) * null,
             _ => throw new NotImplementedException()
         };
 
-        return Value.Value;
+        return Value;
+    }
+
+    public decimal? Solve(Dictionary<string, Monkey> monkeys, decimal? value)
+    {
+        if (Value.HasValue)
+        {
+            return null;
+        }
+
+        if (string.IsNullOrWhiteSpace(LeftMonkey))
+        {
+            return value;
+        }
+
+        var l = monkeys[LeftMonkey!];
+        var r = monkeys[RightMonkey!];
+
+        switch (Operation)
+        {
+            case "+":
+                if (!l.Value.HasValue)
+                {
+                    return l.Solve(monkeys, value - r.Value);
+                }
+                else if (!r.Value.HasValue)
+                {
+                    return r.Solve(monkeys, value - l.Value);
+                }
+                break;
+            case "-":
+                if (!l.Value.HasValue)
+                {
+                    return l.Solve(monkeys, value + r.Value);
+                }
+                else if (!r.Value.HasValue)
+                {
+                    return r.Solve(monkeys, l.Value - value);
+                }
+                break;
+            case "*":
+                if (!l.Value.HasValue)
+                {
+                    return l.Solve(monkeys, value / r.Value);
+                }
+                else if (!r.Value.HasValue)
+                {
+                    return r.Solve(monkeys, value / l.Value);
+                }
+                break;
+            case "/":
+                if (!l.Value.HasValue)
+                {
+                    return l.Solve(monkeys, value * r.Value);
+                }
+                else if (!r.Value.HasValue)
+                {
+                    return r.Solve(monkeys, l.Value / value);
+                }
+                break;
+            case "=":
+                if (!l.Value.HasValue)
+                {
+                    return l.Solve(monkeys, r.Value);
+                }
+                else if (!r.Value.HasValue)
+                {
+                    return r.Solve(monkeys, l.Value);
+                }
+                break;
+            default:
+                return null;
+        }
+
+        return null;
     }
 }
