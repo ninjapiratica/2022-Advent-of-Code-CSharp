@@ -39,7 +39,60 @@ while (!paths.Contains(end))
     paths = possiblePaths;
 }
 
-// 159 too low
+paths = new HashSet<Point>() { end };
+
+while (!paths.Contains(start))
+{
+    time++;
+    var badPoints = blizzards.Select(p => p.Points[time % p.Points.Length]).ToList();
+    var possiblePaths = new HashSet<Point>();
+    foreach (var path in paths)
+    {
+        var xyz = new[]
+        {
+            new Point(path.X -1, path.Y),
+            new Point(path.X + 1, path.Y),
+            new Point(path.X, path.Y - 1),
+            new Point(path.X, path.Y + 1),
+            path
+        }.Where(x => (x.X >= 1 && x.Y >= 1 && x.X <= maxX && x.Y <= maxY) || x == start || x == end);
+
+        foreach (var pt in xyz.Where(x => !badPoints.Contains(x)))
+        {
+            possiblePaths.Add(pt);
+        }
+    }
+
+    paths = possiblePaths;
+}
+
+paths = new HashSet<Point>() { start };
+
+while (!paths.Contains(end))
+{
+    time++;
+    var badPoints = blizzards.Select(p => p.Points[time % p.Points.Length]).ToList();
+    var possiblePaths = new HashSet<Point>();
+    foreach (var path in paths)
+    {
+        var xyz = new[]
+        {
+            new Point(path.X -1, path.Y),
+            new Point(path.X + 1, path.Y),
+            new Point(path.X, path.Y - 1),
+            new Point(path.X, path.Y + 1),
+            path
+        }.Where(x => (x.X >= 1 && x.Y >= 1 && x.X <= maxX && x.Y <= maxY) || x == start || x == end);
+
+        foreach (var pt in xyz.Where(x => !badPoints.Contains(x)))
+        {
+            possiblePaths.Add(pt);
+        }
+    }
+
+    paths = possiblePaths;
+}
+
 Console.WriteLine(time);
 
 public class Blizzard
